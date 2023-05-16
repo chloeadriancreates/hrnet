@@ -1,13 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import NewEmployee from './pages/NewEmployee';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import NewEmployee from "./pages/NewEmployee/NewEmployee";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import EmployeeList from "./pages/EmployeeList/EmployeeList";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <NewEmployee />
+  },
+  {
+    path: "/employees",
+    element: <EmployeeList />
+  }
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <NewEmployee />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

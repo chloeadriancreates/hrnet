@@ -1,7 +1,10 @@
-import './NewEmployee.css';
+import Header from "../../components/Header";
+import "./NewEmployee.css";
 
 export default function NewEmployee() {
   return (
-    <div></div>
+    <div className="newEmployee">
+      <Header />
+    </div>
   );
 }

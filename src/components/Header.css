@@ -1,0 +1,24 @@
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--background);
+}
+
+.header-title {
+    margin: 0;
+    font-family: var(--headline);
+    font-weight: normal;
+}
+
+.nav-item {
+    font-family: var(--copy);
+    text-decoration: none;
+    color: black;
+}
+
+.nav-item:not(:last-child) {
+    margin-right: 20px;
+}
