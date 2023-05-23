@@ -3,3 +3,17 @@
   flex-direction: column;
   align-items: center;
 }
+
+.contentRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.contentRow:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.contentRow > *:not(:last-child) {
+  margin-right: 20px;
+}

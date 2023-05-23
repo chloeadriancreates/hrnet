@@ -1,6 +1,11 @@
 .card {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+}
+
+.card:not(:last-child) {
+    margin-bottom: 50px;
 }
 
 .card-title {
@@ -12,12 +17,12 @@
 }
 
 .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
     border-radius: 0px 0px 10px 10px;
     border: solid 2px var(--medium);
     border-top: none;
-}
-
-.card-content > *:not(:last-child) {
-    margin-right: 20px;
 }
