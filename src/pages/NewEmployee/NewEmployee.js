@@ -11,9 +11,14 @@ import Select from "@mui/material/Select";
 
 export default function NewEmployee() {
   const [state, setState] = useState("");
+  const [department, setDepartment] = useState("");
 
-  const handleChange = (event) => {
+  const handleStateChange = (event) => {
     setState(event.target.value);
+  };
+
+  const handleDepartmentChange = (event) => {
+    setDepartment(event.target.value);
   };
 
   return (
@@ -37,7 +42,7 @@ export default function NewEmployee() {
             <Select
               labelId="stateSelect"
               value={state}
-              onChange={handleChange}
+              onChange={handleStateChange}
               label="State"
             >
               <MenuItem value={"Alabama"}>Alabama</MenuItem>
@@ -46,6 +51,26 @@ export default function NewEmployee() {
             </Select>
           </FormControl>
           <TextField sx={{ width: "100%" }} label="Zip code" variant="outlined" />
+        </div>
+      </Card>
+      <Card title="Company information">
+        <div className="contentRow">
+          <DatePicker sx={{ width: "100%" }} label="Start date" />
+          <FormControl sx={{ width: "100%" }}>
+            <InputLabel id="departmentSelect">Department</InputLabel>
+            <Select
+              labelId="departmentSelect"
+              value={department}
+              onChange={handleDepartmentChange}
+              label="Department"
+            >
+              <MenuItem value={"Sales"}>Sales</MenuItem>
+              <MenuItem value={"Marketing"}>Marketing</MenuItem>
+              <MenuItem value={"Engineering"}>Engineering</MenuItem>
+              <MenuItem value={"Human Resources"}>Human Resources</MenuItem>
+              <MenuItem value={"Legal"}>Legal</MenuItem>Legal
+            </Select>
+          </FormControl>
         </div>
       </Card>
     </div>
