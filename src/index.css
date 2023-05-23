@@ -1,10 +1,10 @@
 body {
+    --white: #F7F7FF;
+    --light: #899fbc;
+    --medium: #577399;
+    --dark: #384a63;
+    --accent: #FE5F55;
     margin: 0;
-    --background: #FDFCDC;
-    --primary-light: #00AFB9;
-    --primary-bright: #0081A7;
-    --secondary-light: #FED9B7;
-    --secondary-bright: #F07167;
-    --headline: 'Righteous', sans-serif;
-    --copy: 'Wix Madefor Display', sans-serif;
+    background: var(--white);
+    font-family: 'Wix Madefor Text', sans-serif;
 }

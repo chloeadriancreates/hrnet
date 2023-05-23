@@ -1,0 +1,23 @@
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    background: var(--medium);
+    color: var(--white);
+    border-radius: 10px 10px 0px 0px;
+    margin: 0;
+    padding: 20px;
+}
+
+.card-content {
+    padding: 20px;
+    border-radius: 0px 0px 10px 10px;
+    border: solid 2px var(--medium);
+    border-top: none;
+}
+
+.card-content > *:not(:last-child) {
+    margin-right: 20px;
+}

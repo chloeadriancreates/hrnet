@@ -3,20 +3,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 50px;
     padding: 20px;
-    background: var(--background);
+    background: var(--medium);
+    color: var(--white);
 }
 
 .header-title {
     margin: 0;
-    font-family: var(--headline);
     font-weight: normal;
 }
 
 .nav-item {
-    font-family: var(--copy);
     text-decoration: none;
-    color: black;
+    color: var(--white);
 }
 
 .nav-item:not(:last-child) {
