@@ -6,6 +6,8 @@ import NewEmployee from "./pages/NewEmployee/NewEmployee";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import EmployeeList from "./pages/EmployeeList/EmployeeList";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const router = createBrowserRouter([
   {
@@ -37,9 +39,11 @@ const theme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ThemeProvider theme={theme}>
-    <RouterProvider router={router} />
-  </ThemeProvider>
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </LocalizationProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
