@@ -5,6 +5,8 @@ import reportWebVitals from "./reportWebVitals";
 import NewEmployee from "./pages/NewEmployee/NewEmployee";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import EmployeeList from "./pages/EmployeeList/EmployeeList";
+import { store } from "./app/store";
+import { Provider } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -39,11 +41,13 @@ const theme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  </LocalizationProvider>
+  <Provider store={store}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </LocalizationProvider>
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
