@@ -15,11 +15,14 @@ import dayjs from "dayjs";
 export default function NewEmployee() {
   const dispatch = useDispatch();
   const today = dayjs();
-  const [USstate, setUSstate] = useState("Alabama");
-  const [department, setDepartment] = useState("Sales");
+  const employees = useSelector((state) => state.employees);
+
+  const [USstateList, setUSstateList] = useState([]);
+  const [USstate, setUSstate] = useState("");
+  const [departmentList, setDepartmentList] = useState([]);
+  const [department, setDepartment] = useState("");
   const [birthday, setBirthday] = useState(today.year(today.year() - 16));
   const [startDate, setStartDate] = useState(today);
-  const employees = useSelector((state) => state.employees);
 
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -27,6 +30,17 @@ export default function NewEmployee() {
   const [cityError, setCityError] = useState(false);
   const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
   const [zipCodeError, setZipCodeError] = useState(false);
+
+  const fetchData = async(URL, setList, setFirst) => {
+    try {
+      const response = await fetch(URL);
+      const JSONData = await response.json();
+      setList(JSONData);
+      setFirst(JSONData[0]);
+    } catch(error) {
+      console.log(error);
+    }
+  };
 
   const testFormValue = (property, setError) => {
     if(!property) {
@@ -51,6 +65,11 @@ export default function NewEmployee() {
       dispatch(addEmployee(employee));
     }
   };
+
+  useEffect(() => {
+    fetchData("./USstates.json", setUSstateList, setUSstate);
+    fetchData("./departments.json", setDepartmentList, setDepartment);
+  }, []);
 
   useEffect(() => {
     console.log(employees);
@@ -124,9 +143,9 @@ export default function NewEmployee() {
                 onChange={(event) => setUSstate(event.target.value)}
                 label="State"
               >
-                <MenuItem value={"Alabama"}>Alabama</MenuItem>
-                <MenuItem value={"Arkansas"}>Arkansas</MenuItem>
-                <MenuItem value={"Alaska"}>Alaska</MenuItem>
+                { USstateList.map((state) =>
+                  <MenuItem value={state} key={state.abbreviation}>{state.name}</MenuItem>
+                )}
               </Select>
             </FormControl>
             <TextField
@@ -159,11 +178,9 @@ export default function NewEmployee() {
                 onChange={(event) => setDepartment(event.target.value)}
                 label="Department"
               >
-                <MenuItem value={"Sales"}>Sales</MenuItem>
-                <MenuItem value={"Marketing"}>Marketing</MenuItem>
-                <MenuItem value={"Engineering"}>Engineering</MenuItem>
-                <MenuItem value={"Human Resources"}>Human Resources</MenuItem>
-                <MenuItem value={"Legal"}>Legal</MenuItem>
+                { departmentList.map((department) =>
+                  <MenuItem value={department} key={departmentList.indexOf(department)}>{department}</MenuItem>
+                )}
               </Select>
             </FormControl>
           </div>
