@@ -11,11 +11,14 @@ import Select from "@mui/material/Select";
 import { useSelector, useDispatch } from "react-redux";
 import { addEmployee } from "../../app/slices/employeeListSlice";
 import dayjs from "dayjs";
+import Modal from "@mui/material/Modal";
 
 export default function NewEmployee() {
   const dispatch = useDispatch();
   const today = dayjs();
   const employees = useSelector((state) => state.employees);
+  const dateOptions = { year: "numeric", month: "long", day: "numeric"};
+  const [employee, setEmployee] = useState({});
 
   const [USstateList, setUSstateList] = useState([]);
   const [USstate, setUSstate] = useState("");
@@ -30,6 +33,7 @@ export default function NewEmployee() {
   const [cityError, setCityError] = useState(false);
   const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
   const [zipCodeError, setZipCodeError] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const fetchData = async(URL, setList, setFirst) => {
     try {
@@ -58,11 +62,13 @@ export default function NewEmployee() {
     console.log(employee);
     employee.state = USstate;
     employee.department = department;
-    employee.birthday = new Date(dayjs(birthday).format());
-    employee.startDate = new Date(dayjs(startDate).format());
+    employee.birthday = dayjs(birthday).format();
+    employee.startDate = dayjs(startDate).format();
 
     if(employee.firstName && employee.lastName && employee.street && employee.city && zipCodeRegex.test(employee.zipCode)) {
       dispatch(addEmployee(employee));
+      setEmployee(employee);
+      setModal(true);
     }
   };
 
@@ -187,6 +193,26 @@ export default function NewEmployee() {
         </Card>
         <button className="newEmployee-submitButton" type="submit">Create employee</button>
       </form>
+      { modal &&
+        <Modal
+          open={modal}
+          onClose={() => setModal(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div className="modal-container">
+            <h2 className="modal-title">Employee created!</h2>
+            <p className="modal-text">{employee.firstName} {employee.lastName} in {employee.department}</p>
+            <p className="modal-text">{employee.street}</p>
+            <p className="modal-text">{employee.city}, {employee.state.name} – {employee.zipCode}</p>
+            <p className="modal-text">Born on {new Intl.DateTimeFormat("en-US", dateOptions).format(new Date(employee.birthday))}</p>
+            <p className="modal-text">Started on {new Intl.DateTimeFormat("en-US", dateOptions).format(new Date(employee.startDate))}</p>
+            <button className="modal-close" onClick={() => setModal(false)}>
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </Modal>
+      }
     </div>
   );
 }

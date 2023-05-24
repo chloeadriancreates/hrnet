@@ -34,7 +34,57 @@
   cursor: pointer;
 }
 
-.newEmployee-submitButton:hover {
+.newEmployee-submitButton:hover, .newEmployee-submitButton:focus {
   background: var(--white);
   color: var(--medium);
+}
+
+.MuiModal-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.MuiModal-backdrop {
+  background-color: var(--mediumLowOpacity)!important;
+}
+
+.modal-container {
+    padding: 30px;
+    border-radius: 10px;
+    background: var(--white);
+    width: fit-content;
+    position: relative;
+}
+
+.modal-title {
+    margin-top: 0;
+}
+
+.modal-text:last-child {
+    margin-bottom: 0;
+}
+
+.modal-close {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: var(--medium);
+  color: var(--white);
+  border: 2px solid var(--white);
+  font-size: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.modal-close:hover, .modal-close:focus {
+  background: var(--white);
+  color: var(--medium);
+  border: 2px solid var(--medium);
 }

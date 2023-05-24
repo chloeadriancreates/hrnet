@@ -1,9 +1,7 @@
 body {
     --white: #F7F7FF;
-    --light: #899fbc;
-    --medium: #577399;
-    --dark: #384a63;
-    --accent: #FE5F55;
+    --medium: rgb(87, 115, 153);
+    --mediumLowOpacity: rgba(87, 115, 153, 0.7);
     margin: 0;
     background: var(--white);
     font-family: 'Wix Madefor Text', sans-serif;
