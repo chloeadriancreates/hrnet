@@ -49,6 +49,8 @@ export default function NewEmployee() {
   const testFormValue = (property, setError) => {
     if(!property) {
       setError(true);
+    } else if(setError === setZipCodeError && !zipCodeRegex.test(property)) {
+      setError(true);
     } else {
       setError(false);
     }
