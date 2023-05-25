@@ -12,20 +12,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { addEmployee } from "../../app/slices/employeeListSlice";
 import dayjs from "dayjs";
 import Modal from "@mui/material/Modal";
+import { setDepartments, setUSstates } from "../../app/slices/selectDataSlice";
 
 export default function NewEmployee() {
   const dispatch = useDispatch();
   const today = dayjs();
-  const employees = useSelector((state) => state.employees);
   const dateOptions = { year: "numeric", month: "long", day: "numeric"};
-  const [employee, setEmployee] = useState({});
 
-  const [USstateList, setUSstateList] = useState([]);
+  const employees = useSelector((state) => state.employees);
+  const USstateList = useSelector((state) => state.selectData.USstates);
+  const departmentList = useSelector((state) => state.selectData.departments);
+
+  const [employee, setEmployee] = useState({});
   const [USstate, setUSstate] = useState("");
-  const [departmentList, setDepartmentList] = useState([]);
   const [department, setDepartment] = useState("");
   const [birthday, setBirthday] = useState(today.year(today.year() - 16));
   const [startDate, setStartDate] = useState(today);
+  const [modal, setModal] = useState(false);
 
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
@@ -33,18 +36,6 @@ export default function NewEmployee() {
   const [cityError, setCityError] = useState(false);
   const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
   const [zipCodeError, setZipCodeError] = useState(false);
-  const [modal, setModal] = useState(false);
-
-  const fetchData = async(URL, setList, setFirst) => {
-    try {
-      const response = await fetch(URL);
-      const JSONData = await response.json();
-      setList(JSONData);
-      setFirst(JSONData[0]);
-    } catch(error) {
-      console.log(error);
-    }
-  };
 
   const testFormValue = (property, setError) => {
     if(!property) {
@@ -75,9 +66,24 @@ export default function NewEmployee() {
   };
 
   useEffect(() => {
-    fetchData("./USstates.json", setUSstateList, setUSstate);
-    fetchData("./departments.json", setDepartmentList, setDepartment);
-  }, []);
+    const fetchData = async(URL, action, setFirst) => {
+      try {
+        const response = await fetch(URL);
+        const JSONData = await response.json();
+        dispatch(action(JSONData));
+        setFirst(JSONData[0]);
+      } catch(error) {
+        console.log(error);
+      }
+    };
+
+    if(USstateList.length === 0) {
+      fetchData("./USstates.json", setUSstates, setUSstate);
+    }
+    if(departmentList.length === 0) {
+      fetchData("./departments.json", setDepartments, setDepartment);
+    }
+  }, [USstateList, departmentList, USstate, department, dispatch]);
 
   useEffect(() => {
     console.log(employees);
@@ -152,7 +158,7 @@ export default function NewEmployee() {
                 label="State"
               >
                 { USstateList.map((state) =>
-                  <MenuItem value={state} key={state.abbreviation}>{state.name}</MenuItem>
+                      <MenuItem value={state} key={state.abbreviation}>{state.name}</MenuItem>
                 )}
               </Select>
             </FormControl>
