@@ -7,9 +7,11 @@ export default function EmployeeList() {
     const employees = useSelector((state) => state.employees);
 
     return (
-        <div>
+        <div className="employeeList">
             <Header />
-            <Table content={employees} />
+            <div className="employeeList-table">
+                <Table content={employees} color="#577399" />
+            </div>
         </div>
     );
 }

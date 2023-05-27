@@ -1,0 +1,20 @@
+.table {
+    width: 100%;
+}
+
+.table-header {
+    background-color: var(--bright);
+}
+
+.table-header-cell {
+    color: var(--text);
+    padding: 10px;
+}
+
+.table-row-cell {
+    padding: 10px;
+}
+
+.table-row:nth-child(2n) {
+    background-color: var(--light);
+}

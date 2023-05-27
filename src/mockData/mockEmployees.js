@@ -448,20 +448,6 @@ export const mockEmployees = [
         "department": "Human Resources"
     },
     {
-        "firstName": "Jimmy",
-        "lastName": "Woo",
-        "birthday": "1976-04-12T11:00:36+02:00",
-        "street": "7248 Magic Trick Street",
-        "city": "Fargo",
-        "state": {
-            "abbreviation": "ND",
-            "name": "North Dakota"
-        },
-        "zipCode": "58103",
-        "startDate": "2017-11-01T11:00:36+02:00",
-        "department": "Human Resources"
-    },
-    {
         "firstName": "Kamala",
         "lastName": "Khan",
         "birthday": "2007-03-17T11:00:36+02:00",

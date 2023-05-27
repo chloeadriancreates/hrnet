@@ -1,9 +1,45 @@
 import "./Table.css";
 import { useEffect, useState } from "react";
 
-export default function Table({ content }) {
+export default function Table({ content, color }) {
     const [formattedContent, setFormattedContent] = useState(content);
     const [categories, setCategories] = useState([]);
+    const [colorTheme, setColorTheme] = useState({
+        "--bright": "rgba(139, 134, 128, 1)",
+        "--light": "rgba(139, 134, 128, 0.2)",
+        "--text": "white"
+    });
+
+    const customColorTheme = (hex) => {
+        let newHex = hex;
+        let text;
+
+        if(newHex.length === 4) {
+            for (const letter of newHex) {
+                if(letter !== "#") {
+                    newHex = newHex.replace(letter, `${letter}${letter}`);
+                }
+            }
+        }
+        const r = parseInt(newHex.slice(1, 3), 16);
+        const g = parseInt(newHex.slice(3, 5), 16);
+        const b = parseInt(newHex.slice(5, 7), 16);
+        const bright = `rgba(${r}, ${g}, ${b}, 1)`;
+        const light = `rgba(${r}, ${g}, ${b}, 0.2)`;
+
+        const relativeLuminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        if(relativeLuminance > 0.5) {
+            text = "black";
+        } else {
+            text = "white";
+        }
+
+        setColorTheme({
+            "--bright": bright,
+            "--light": light,
+            "--text": text
+        });
+    };
 
     const renderProperty = (row, category) => {
         if(row.hasOwnProperty(category.category)) {
@@ -41,21 +77,28 @@ export default function Table({ content }) {
             setCategories(formattedCategories);
         };
 
-        defineCategories(formattedContent);
-    }, [formattedContent]);
+        defineCategories(content);
+    }, [content]);
+
+    useEffect(() => {
+        const hexRegex = /^#[0-9a-zA-Z]{3}(?:[0-9a-zA-Z]{3})?$/;
+        if(hexRegex.test(color)) {
+            customColorTheme(color);
+        }
+    }, [color]);
 
     return (
-        <table>
+        <table className="table" style={colorTheme}>
             <thead>
-                <tr>
-                    { categories.map(category => <th key={category.category}>{category.formattedCategory}</th>) }
+                <tr className="table-header">
+                    { categories.map(category => <th key={category.category} className="table-header-cell">{category.formattedCategory}</th>) }
                 </tr>
             </thead>
             <tbody>
                 { formattedContent.map(row => (
-                    <tr key={formattedContent.indexOf(row)}>
+                    <tr key={formattedContent.indexOf(row)} className="table-row">
                         { categories.map(category =>
-                            <td key={category.category}>{ renderProperty(row, category) }</td>
+                            <td key={category.category} className="table-row-cell">{ renderProperty(row, category) }</td>
                         )}
                     </tr>
                 ))}
