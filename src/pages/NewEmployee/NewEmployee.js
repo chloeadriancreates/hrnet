@@ -55,8 +55,8 @@ export default function NewEmployee() {
     console.log(employee);
     employee.state = USstate;
     employee.department = department;
-    employee.birthday = dayjs(birthday).format();
-    employee.startDate = dayjs(startDate).format();
+    employee.birthday = dayjs(birthday).toISOString();
+    employee.startDate = dayjs(startDate).toISOString();
 
     if(employee.firstName && employee.lastName && employee.street && employee.city && zipCodeRegex.test(employee.zipCode)) {
       dispatch(addEmployee(employee));

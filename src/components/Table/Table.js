@@ -1,7 +1,9 @@
 import "./Table.css";
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+// import customParseFormat from "dayjs/plugin/customParseFormat";
 
-export default function Table({ content, color }) {
+export default function Table({ content, color, dateFormat }) {
     const [formattedContent, setFormattedContent] = useState(content);
     const [categories, setCategories] = useState([]);
     const [colorTheme, setColorTheme] = useState({
@@ -43,8 +45,19 @@ export default function Table({ content, color }) {
 
     const renderProperty = (row, category) => {
         if(row.hasOwnProperty(category.category)) {
+            if(dayjs(row[category.category]).isValid()) {
+                console.log(row[category.category]);
+                console.log(dayjs(row[category.category]).toISOString());
+                console.log(row[category.category] === dayjs(row[category.category]).toISOString());
+            }
             if(typeof row[category.category] === "object") {
                 return row[category.category].abbreviation;
+            } else if(dayjs(row[category.category]).isValid() && row[category.category] === dayjs(row[category.category]).toISOString()) {
+                if(dateFormat) {
+                    return dayjs(row[category.category]).format(dateFormat);
+                } else {
+                    return dayjs(row[category.category]).format("DD/MM/YYYY");
+                }
             }
             return row[category.category];
         }
