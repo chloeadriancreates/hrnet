@@ -352,7 +352,7 @@ export const mockEmployees = [
     {
         "firstName": "Brunnhilde",
         "lastName": "Valkyrie",
-        "birthday": "2001-11-10T12:00:58.971Z",
+        "birthday": "1983-10-03T12:00:58.971Z",
         "street": "93 New Asgard Boulevard",
         "city": "Omaha",
         "state": {

@@ -11,10 +11,20 @@
     padding: 10px;
 }
 
+.table-row:nth-child(2n) {
+    background-color: var(--light);
+}
+
 .table-row-cell {
     padding: 10px;
 }
 
-.table-row:nth-child(2n) {
-    background-color: var(--light);
+.table-header-sort {
+    border: none;
+    background: none;
+    padding: 0;
+    position: relative;
+    margin-left: 10px;
+    color: var(--text);
+    cursor: pointer;
 }

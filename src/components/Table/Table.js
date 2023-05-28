@@ -1,16 +1,30 @@
 import "./Table.css";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-// import customParseFormat from "dayjs/plugin/customParseFormat";
 
-export default function Table({ content, color, dateFormat }) {
-    const [formattedContent, setFormattedContent] = useState(content);
+export default function Table({ content, color, dateFormat, objectKey }) {
+    const [formattedContent, setFormattedContent] = useState([...content]);
+    const [ascending, setAscending] = useState({});
     const [categories, setCategories] = useState([]);
     const [colorTheme, setColorTheme] = useState({
         "--bright": "rgba(139, 134, 128, 1)",
         "--light": "rgba(139, 134, 128, 0.2)",
         "--text": "white"
     });
+
+    const sortContent = (category) => {
+        let newContent = [...formattedContent].sort((a, b) => {
+            if(ascending[category]) {
+                return a[category].toLowerCase().localeCompare(b[category].toLowerCase());
+            } else {
+                return b[category].toLowerCase().localeCompare(a[category].toLowerCase());
+            }
+        });
+        const newAscending = {...ascending};
+        newAscending[category] = !newAscending[category];
+        setAscending(newAscending);
+        setFormattedContent(newContent);
+    };
 
     const customColorTheme = (hex) => {
         let newHex = hex;
@@ -45,14 +59,7 @@ export default function Table({ content, color, dateFormat }) {
 
     const renderProperty = (row, category) => {
         if(row.hasOwnProperty(category.category)) {
-            if(dayjs(row[category.category]).isValid()) {
-                console.log(row[category.category]);
-                console.log(dayjs(row[category.category]).toISOString());
-                console.log(row[category.category] === dayjs(row[category.category]).toISOString());
-            }
-            if(typeof row[category.category] === "object") {
-                return row[category.category].abbreviation;
-            } else if(dayjs(row[category.category]).isValid() && row[category.category] === dayjs(row[category.category]).toISOString()) {
+            if(dayjs(row[category.category]).isValid() && row[category.category] === dayjs(row[category.category]).toISOString()) {
                 if(dateFormat) {
                     return dayjs(row[category.category]).format(dateFormat);
                 } else {
@@ -67,6 +74,7 @@ export default function Table({ content, color, dateFormat }) {
         const defineCategories = (content) => {
             const tempCategories = [];
             const formattedCategories = [];
+            const ascendingBools = {};
 
             content.forEach(object => {
                 for (let property in object) {
@@ -85,13 +93,35 @@ export default function Table({ content, color, dateFormat }) {
                 }
                 formattedCategory = formattedCategory.replace(formattedCategory[0], formattedCategory[0].toUpperCase());
                 formattedCategories.push({ "category": category, "formattedCategory": formattedCategory });
+                ascendingBools[category] = true;
             });
 
             setCategories(formattedCategories);
+            setAscending(ascendingBools);
+        };
+
+        const removeObjects = (content) => {
+            let tempContent = [];
+
+            content.forEach(object => {
+                const newObject = {};
+                for(const property in object) {
+                    if(objectKey.hasOwnProperty(property)) {
+                        const replacementProperty = objectKey[property];
+                        newObject[property] = object[property][replacementProperty];
+                    } else {
+                        newObject[property] = object[property];
+                    }
+                }
+                tempContent.push(newObject);
+            });
+
+            setFormattedContent(tempContent);
         };
 
         defineCategories(content);
-    }, [content]);
+        removeObjects(content);
+    }, [content, objectKey]);
 
     useEffect(() => {
         const hexRegex = /^#[0-9a-zA-Z]{3}(?:[0-9a-zA-Z]{3})?$/;
@@ -100,11 +130,23 @@ export default function Table({ content, color, dateFormat }) {
         }
     }, [color]);
 
+    useEffect(() => {
+        console.log(formattedContent);
+    }, [formattedContent]);
+
     return (
         <table className="table" style={colorTheme}>
             <thead>
                 <tr className="table-header">
-                    { categories.map(category => <th key={category.category} className="table-header-cell">{category.formattedCategory}</th>) }
+                    { categories.map(category =>
+                        <th key={category.category} className="table-header-cell">
+                            {category.formattedCategory}
+                            <button className="table-header-sort" onClick={() => sortContent(category.category)}>
+                                <i className="table-header-sort-icon fa-solid fa-sort-up"></i>
+                                <i className="table-header-sort-icon fa-solid fa-sort-down"></i>
+                            </button>
+                        </th>)
+                    }
                 </tr>
             </thead>
             <tbody>

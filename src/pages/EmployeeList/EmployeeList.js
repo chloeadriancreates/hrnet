@@ -10,7 +10,7 @@ export default function EmployeeList() {
         <div className="employeeList">
             <Header />
             <div className="employeeList-table">
-                <Table content={employees} color="#577399" dateFormat="MM/DD/YYYY" />
+                <Table content={employees} color="#577399" dateFormat="MM/DD/YYYY" objectKey={{ state: "abbreviation" }} />
             </div>
         </div>
     );
