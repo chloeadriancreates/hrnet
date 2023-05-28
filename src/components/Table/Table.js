@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 export default function Table({ content, color, dateFormat, objectKey }) {
-    const [formattedContent, setFormattedContent] = useState([...content]);
-    const [sorting, setSorting] = useState({});
+    const [formattedContent, setFormattedContent] = useState(null);
+    const [separatedContent, setSeparatedContent] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [sorting, setSorting] = useState({});
+    const [rowsDisplayed, setRowsDisplayed] = useState(10);
+    const [currentPage, setCurrentPage] = useState(0);
     const [colorTheme, setColorTheme] = useState({
         "--bright": "rgba(139, 134, 128, 1)",
         "--light": "rgba(139, 134, 128, 0.2)",
@@ -119,7 +122,6 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                 }
                 tempContent.push(newObject);
             });
-
             setFormattedContent(tempContent);
         };
 
@@ -134,32 +136,79 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         }
     }, [color]);
 
+    useEffect(() => {
+        const separatePages = (content) => {
+            let originalContent = [...content];
+            let slices = [];
+            while (originalContent.length > 0) {
+                slices.push(originalContent.slice(0, rowsDisplayed));
+                originalContent = originalContent.slice(rowsDisplayed - 1, -1);
+            }
+            setSeparatedContent(slices);
+        };
+
+        if(formattedContent) {
+            setCurrentPage(0);
+            separatePages(formattedContent);
+        }
+    }, [rowsDisplayed, formattedContent]);
+
+    useEffect(() => {
+        console.log(separatedContent);
+        console.log(currentPage);
+        if(separatedContent) {
+            console.log(separatedContent[currentPage]);
+        }
+    }, [separatedContent, currentPage]);
+
     return (
-        <table className="table" style={colorTheme}>
-            <thead>
-                <tr className="table-header">
-                    { categories.map(category =>
-                        <th key={category.category} className="table-header-cell">
-                            <button className="table-header-sort" onClick={() => sortContent(category.category)}>
-                                <h3>{category.formattedCategory}</h3>
-                                <div className="table-header-sort-icon-box">
-                                    <i className={ sorting[category.category] !== "descending" ? "table-header-sort-icon fa-solid fa-sort-up" : "table-header-sort-icon fa-solid fa-sort-up  table-header-sort-icon-hidden" }></i>
-                                    <i className={ sorting[category.category] !== "ascending" ? "table-header-sort-icon fa-solid fa-sort-down" : "table-header-sort-icon fa-solid fa-sort-down  table-header-sort-icon-hidden" }></i>
-                                </div>
-                            </button>
-                        </th>)
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                { formattedContent.map(row => (
-                    <tr key={formattedContent.indexOf(row)} className="table-row">
+        <div className="table-container">
+            <header className="table-container-header">
+                <label>
+                    Show
+                    <select
+                        value={rowsDisplayed}
+                        onChange={event => setRowsDisplayed(event.target.value)}
+                    >
+                        <option value={10}>10</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                    </select>
+                    entries
+                </label>
+            </header>
+            <table className="table" style={colorTheme}>
+                <thead>
+                    <tr className="table-header">
                         { categories.map(category =>
-                            <td key={category.category} className="table-row-cell">{ renderProperty(row, category) }</td>
-                        )}
+                            <th key={category.category} className="table-header-cell">
+                                <button className="table-header-sort" onClick={() => sortContent(category.category)}>
+                                    <h3>{category.formattedCategory}</h3>
+                                    <div className="table-header-sort-icon-box">
+                                        <i className={ sorting[category.category] !== "descending" ? "table-header-sort-icon fa-solid fa-sort-up" : "table-header-sort-icon fa-solid fa-sort-up  table-header-sort-icon-hidden" }></i>
+                                        <i className={ sorting[category.category] !== "ascending" ? "table-header-sort-icon fa-solid fa-sort-down" : "table-header-sort-icon fa-solid fa-sort-down  table-header-sort-icon-hidden" }></i>
+                                    </div>
+                                </button>
+                            </th>)
+                        }
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    { separatedContent && separatedContent[currentPage].map(row => (
+                        <tr key={separatedContent[currentPage].indexOf(row)} className="table-row">
+                            { categories.map(category =>
+                                <td key={category.category} className="table-row-cell">{ renderProperty(row, category) }</td>
+                            )}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <nav>
+                { currentPage !== 0 && <button onClick={() => setCurrentPage(currentPage - 1)}>Previous</button> }
+                <p>{currentPage + 1}</p>
+                { (separatedContent && currentPage !== separatedContent.length - 1) && <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button> }
+            </nav>
+        </div>
     );
 }
