@@ -1,5 +1,6 @@
 .table {
     width: 100%;
+    padding: 20px 0;
 }
 
 .table-header {
@@ -42,4 +43,46 @@
 
 .table-header-sort-icon-hidden {
     opacity: 0;
+}
+
+.table-container-header-select {
+    margin: 0 10px;
+}
+
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-footer-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-footer-counter {
+    margin: 0;
+}
+
+.table-footer-nav-counter {
+    margin: 0 10px;
+}
+
+.table-footer-nav-button {
+    background: var(--bright);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Wix Madefor Text', sans-serif;
+    box-shadow: none;
+    border: solid 2px var(--bright);
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+  
+.table-footer-nav-button:hover, .table-footer-nav-button:focus {
+    background: white;
+    color: var(--bright);
 }

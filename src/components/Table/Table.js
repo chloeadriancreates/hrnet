@@ -153,20 +153,13 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         }
     }, [rowsDisplayed, formattedContent]);
 
-    useEffect(() => {
-        console.log(separatedContent);
-        console.log(currentPage);
-        if(separatedContent) {
-            console.log(separatedContent[currentPage]);
-        }
-    }, [separatedContent, currentPage]);
-
     return (
-        <div className="table-container">
+        <div className="table-container" style={colorTheme}>
             <header className="table-container-header">
                 <label>
                     Show
                     <select
+                        className="table-container-header-select"
                         value={rowsDisplayed}
                         onChange={event => setRowsDisplayed(event.target.value)}
                     >
@@ -178,7 +171,7 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                     entries
                 </label>
             </header>
-            <table className="table" style={colorTheme}>
+            <table className="table">
                 <thead>
                     <tr className="table-header">
                         { categories.map(category =>
@@ -204,11 +197,18 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                     ))}
                 </tbody>
             </table>
-            <nav>
-                { currentPage !== 0 && <button onClick={() => setCurrentPage(currentPage - 1)}>Previous</button> }
-                <p>{currentPage + 1}</p>
-                { (separatedContent && currentPage !== separatedContent.length - 1) && <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button> }
-            </nav>
+            <footer className="table-footer">
+                { separatedContent &&
+                    <p className="table-footer-counter">
+                        Showing {(formattedContent.indexOf(separatedContent[currentPage][0])) + 1} to { formattedContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1]) === -1 ? content.length : (formattedContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1])) + 1 } of {content.length} entries
+                    </p>
+                }
+                <nav className="table-footer-nav">
+                    { currentPage !== 0 && <button onClick={() => setCurrentPage(currentPage - 1)} className="table-footer-nav-button">Previous</button> }
+                    <p className="table-footer-nav-counter">Page {currentPage + 1}</p>
+                    { (separatedContent && currentPage !== separatedContent.length - 1) && <button onClick={() => setCurrentPage(currentPage + 1)} className="table-footer-nav-button">Next</button> }
+                </nav>
+            </footer>
         </div>
     );
 }
