@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 export default function Table({ content, color, dateFormat, objectKey }) {
     const [formattedContent, setFormattedContent] = useState([...content]);
-    const [ascending, setAscending] = useState({});
+    const [sorting, setSorting] = useState({});
     const [categories, setCategories] = useState([]);
     const [colorTheme, setColorTheme] = useState({
         "--bright": "rgba(139, 134, 128, 1)",
@@ -13,16 +13,20 @@ export default function Table({ content, color, dateFormat, objectKey }) {
     });
 
     const sortContent = (category) => {
+        const newSorting = {...sorting};
+        for(let sortingCategory in newSorting) {
+            newSorting[sortingCategory] = "none";
+        }
         let newContent = [...formattedContent].sort((a, b) => {
-            if(ascending[category]) {
+            if(sorting[category] === "none" || sorting[category] === "descending") {
+                newSorting[category] = "ascending";
                 return a[category].toLowerCase().localeCompare(b[category].toLowerCase());
             } else {
+                newSorting[category] = "descending";
                 return b[category].toLowerCase().localeCompare(a[category].toLowerCase());
             }
         });
-        const newAscending = {...ascending};
-        newAscending[category] = !newAscending[category];
-        setAscending(newAscending);
+        setSorting(newSorting);
         setFormattedContent(newContent);
     };
 
@@ -74,7 +78,7 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         const defineCategories = (content) => {
             const tempCategories = [];
             const formattedCategories = [];
-            const ascendingBools = {};
+            const initSorting = {};
 
             content.forEach(object => {
                 for (let property in object) {
@@ -93,11 +97,11 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                 }
                 formattedCategory = formattedCategory.replace(formattedCategory[0], formattedCategory[0].toUpperCase());
                 formattedCategories.push({ "category": category, "formattedCategory": formattedCategory });
-                ascendingBools[category] = true;
+                initSorting[category] = "none";
             });
 
             setCategories(formattedCategories);
-            setAscending(ascendingBools);
+            setSorting(initSorting);
         };
 
         const removeObjects = (content) => {
@@ -130,20 +134,18 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         }
     }, [color]);
 
-    useEffect(() => {
-        console.log(formattedContent);
-    }, [formattedContent]);
-
     return (
         <table className="table" style={colorTheme}>
             <thead>
                 <tr className="table-header">
                     { categories.map(category =>
                         <th key={category.category} className="table-header-cell">
-                            {category.formattedCategory}
                             <button className="table-header-sort" onClick={() => sortContent(category.category)}>
-                                <i className="table-header-sort-icon fa-solid fa-sort-up"></i>
-                                <i className="table-header-sort-icon fa-solid fa-sort-down"></i>
+                                <h3>{category.formattedCategory}</h3>
+                                <div className="table-header-sort-icon-box">
+                                    <i className={ sorting[category.category] !== "descending" ? "table-header-sort-icon fa-solid fa-sort-up" : "table-header-sort-icon fa-solid fa-sort-up  table-header-sort-icon-hidden" }></i>
+                                    <i className={ sorting[category.category] !== "ascending" ? "table-header-sort-icon fa-solid fa-sort-down" : "table-header-sort-icon fa-solid fa-sort-down  table-header-sort-icon-hidden" }></i>
+                                </div>
                             </button>
                         </th>)
                     }

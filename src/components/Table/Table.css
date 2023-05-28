@@ -23,8 +23,23 @@
     border: none;
     background: none;
     padding: 0;
-    position: relative;
-    margin-left: 10px;
     color: var(--text);
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.table-header-sort-icon-box {
+    position: relative;
+    margin-left: 10px;
+}
+
+.table-header-sort-icon:first-of-type {
+    position: absolute;
+}
+
+.table-header-sort-icon-hidden {
+    opacity: 0;
 }
