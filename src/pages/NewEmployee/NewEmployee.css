@@ -6,6 +6,11 @@
   margin: 50px auto;
 }
 
+.newEmployee-title {
+  width: 100%;
+  text-align: center;
+}
+
 .newEmployee-contentRow {
   display: flex;
   align-items: start;

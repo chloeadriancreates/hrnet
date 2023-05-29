@@ -2,6 +2,11 @@
     width: 100vw;
 }
 
+.employeeList-title {
+    width: 100%;
+    text-align: center;
+}
+
 .employeeList-table {
     padding: 0 50px 50px;
 }

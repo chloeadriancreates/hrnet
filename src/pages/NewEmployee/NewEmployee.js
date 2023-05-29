@@ -37,6 +37,10 @@ export default function NewEmployee() {
   const zipCodeRegex = /^[0-9]{5}(?:-[0-9]{4})?$/;
   const [zipCodeError, setZipCodeError] = useState(false);
 
+  useEffect(() => {
+    document.title = "HRNet – Add an employee";
+  }, []);
+
   const testFormValue = (property, setError) => {
     if(!property) {
       setError(true);
@@ -92,6 +96,7 @@ export default function NewEmployee() {
   return (
     <div className="newEmployee">
       <Header />
+      <h1 className="newEmployee-title">Add an employee</h1>
       <form className="newEmployee-form" onSubmit={handleSubmit}>
         <Card title="Personal information">
           <div className="newEmployee-contentRow">
