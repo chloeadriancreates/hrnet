@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 
 export default function Table({ content, color, dateFormat, objectKey }) {
     const [formattedContent, setFormattedContent] = useState(null);
+    const [filteredContent, setFilteredContent] = useState(null);
     const [separatedContent, setSeparatedContent] = useState(null);
     const [categories, setCategories] = useState([]);
     const [sorting, setSorting] = useState({});
@@ -15,22 +16,45 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         "--text": "white"
     });
 
-    const sortContent = (category) => {
+    const filterContent = (query, content) => {
+        const newContent = content.filter(row => {
+            for(const property in row) {
+                if(row[property].toLowerCase().includes(query.toLowerCase())) {
+                    return row;
+                }
+            }
+        });
+
+        for(const category in sorting) {
+            if(sorting[category] !== "none") {
+                return sortContent(newContent, category, false);
+            }
+        }
+
+        return newContent;
+    };
+
+    const toggleSortOrder = (category) => {
         const newSorting = {...sorting};
         for(let sortingCategory in newSorting) {
             newSorting[sortingCategory] = "none";
         }
-        let newContent = [...formattedContent].sort((a, b) => {
-            if(sorting[category] === "none" || sorting[category] === "descending") {
-                newSorting[category] = "ascending";
+        if(sorting[category] === "none" || sorting[category] === "descending") {
+            newSorting[category] = "ascending";
+        } else {
+            newSorting[category] = "descending";
+        }
+        setSorting(newSorting);
+    };
+
+    const sortContent = (content, category, toggle) => {
+        return [...content].sort((a, b) => {
+            if(((sorting[category] === "none" || sorting[category] === "descending") && toggle) || (sorting[category] === "ascending" && !toggle)) {
                 return a[category].toLowerCase().localeCompare(b[category].toLowerCase());
             } else {
-                newSorting[category] = "descending";
                 return b[category].toLowerCase().localeCompare(a[category].toLowerCase());
             }
         });
-        setSorting(newSorting);
-        setFormattedContent(newContent);
     };
 
     const customColorTheme = (hex) => {
@@ -137,6 +161,10 @@ export default function Table({ content, color, dateFormat, objectKey }) {
     }, [color]);
 
     useEffect(() => {
+        setFilteredContent(formattedContent);
+    }, [formattedContent]);
+
+    useEffect(() => {
         const separatePages = (content) => {
             let originalContent = [...content];
             let slices = [];
@@ -147,11 +175,11 @@ export default function Table({ content, color, dateFormat, objectKey }) {
             setSeparatedContent(slices);
         };
 
-        if(formattedContent) {
+        if(filteredContent) {
             setCurrentPage(0);
-            separatePages(formattedContent);
+            separatePages(filteredContent);
         }
-    }, [rowsDisplayed, formattedContent]);
+    }, [rowsDisplayed, filteredContent]);
 
     return (
         <div className="table-container" style={colorTheme}>
@@ -170,13 +198,22 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                     </select>
                     entries
                 </label>
+                <form className="table-container-header-search">
+                    <label htmlFor="tableSearch">Search: </label>
+                    <input name="tableSearch" className="table-container-header-search-input" onChange={(event) => {
+                        setFilteredContent(filterContent(event.target.value, formattedContent));
+                    }}></input>
+                </form>
             </header>
             <table className="table">
                 <thead>
                     <tr className="table-header">
                         { categories.map(category =>
                             <th key={category.category} className="table-header-cell">
-                                <button className="table-header-sort" onClick={() => sortContent(category.category)}>
+                                <button className="table-header-sort" onClick={() => {
+                                    setFilteredContent(sortContent(filteredContent, category.category, true));
+                                    toggleSortOrder(category.category);
+                                }}>
                                     <h3>{category.formattedCategory}</h3>
                                     <div className="table-header-sort-icon-box">
                                         <i className={ sorting[category.category] !== "descending" ? "table-header-sort-icon fa-solid fa-sort-up" : "table-header-sort-icon fa-solid fa-sort-up  table-header-sort-icon-hidden" }></i>
@@ -188,26 +225,32 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                     </tr>
                 </thead>
                 <tbody>
-                    { separatedContent && separatedContent[currentPage].map(row => (
-                        <tr key={separatedContent[currentPage].indexOf(row)} className="table-row">
-                            { categories.map(category =>
-                                <td key={category.category} className="table-row-cell">{ renderProperty(row, category) }</td>
-                            )}
+                    { (separatedContent && separatedContent.length > 0) ?
+                        separatedContent[currentPage].map(row => (
+                            <tr key={separatedContent[currentPage].indexOf(row)} className="table-row">
+                                { categories.map(category =>
+                                    <td key={category.category} className="table-row-cell">{ renderProperty(row, category) }</td>
+                                )}
+                            </tr>))
+                        : <tr>
+                            <td className="table-error" colSpan={categories.length}>No result matches your search!</td>
                         </tr>
-                    ))}
+                    }
                 </tbody>
             </table>
             <footer className="table-footer">
-                { separatedContent &&
+                { (separatedContent && separatedContent.length > 0) &&
                     <p className="table-footer-counter">
-                        Showing {(formattedContent.indexOf(separatedContent[currentPage][0])) + 1} to { formattedContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1]) === -1 ? content.length : (formattedContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1])) + 1 } of {content.length} entries
+                        Showing {(filteredContent.indexOf(separatedContent[currentPage][0])) + 1} to { filteredContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1]) === -1 ? filteredContent.length : (filteredContent.indexOf(separatedContent[currentPage][rowsDisplayed - 1])) + 1 } of {filteredContent.length} entries
                     </p>
                 }
-                <nav className="table-footer-nav">
-                    { currentPage !== 0 && <button onClick={() => setCurrentPage(currentPage - 1)} className="table-footer-nav-button">Previous</button> }
-                    <p className="table-footer-nav-counter">Page {currentPage + 1}</p>
-                    { (separatedContent && currentPage !== separatedContent.length - 1) && <button onClick={() => setCurrentPage(currentPage + 1)} className="table-footer-nav-button">Next</button> }
-                </nav>
+                { (separatedContent && separatedContent.length > 0) &&
+                    <nav className="table-footer-nav">
+                        { currentPage !== 0 && <button onClick={() => setCurrentPage(currentPage - 1)} className="table-footer-nav-button">Previous</button> }
+                        <p className="table-footer-nav-counter">Page {currentPage + 1}</p>
+                        { (separatedContent && currentPage !== separatedContent.length - 1) && <button onClick={() => setCurrentPage(currentPage + 1)} className="table-footer-nav-button">Next</button> }
+                    </nav>
+                }
             </footer>
         </div>
     );
