@@ -18,11 +18,10 @@ export default function Table({ content, color, dateFormat, objectKey }) {
 
     const filterContent = (query, content) => {
         const newContent = content.filter(row => {
-            for(const property in row) {
-                if(row[property].toLowerCase().includes(query.toLowerCase())) {
-                    return row;
-                }
-            }
+            let rowValues = Object.values(row);
+            rowValues = rowValues.map(value => value.toLowerCase().includes(query.toLowerCase()));
+            console.log(rowValues.includes(true));
+            return rowValues.includes(true);
         });
 
         for(const category in sorting) {
@@ -184,9 +183,11 @@ export default function Table({ content, color, dateFormat, objectKey }) {
     return (
         <div className="table-container" style={colorTheme}>
             <header className="table-container-header">
-                <label>
+                <label htmlFor="tableSeparate">
                     Show
                     <select
+                        id="tableSeparate"
+                        name="tableSeparate"
                         className="table-container-header-select"
                         value={rowsDisplayed}
                         onChange={event => setRowsDisplayed(event.target.value)}
@@ -200,7 +201,7 @@ export default function Table({ content, color, dateFormat, objectKey }) {
                 </label>
                 <form className="table-container-header-search">
                     <label htmlFor="tableSearch">Search: </label>
-                    <input name="tableSearch" className="table-container-header-search-input" onChange={(event) => {
+                    <input id="tableSearch" name="tableSearch" className="table-container-header-search-input" onChange={(event) => {
                         setFilteredContent(filterContent(event.target.value, formattedContent));
                     }}></input>
                 </form>

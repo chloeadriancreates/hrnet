@@ -19,7 +19,6 @@ export default function NewEmployee() {
   const today = dayjs();
   const dateOptions = { year: "numeric", month: "long", day: "numeric"};
 
-  const employees = useSelector((state) => state.employees);
   const USstateList = useSelector((state) => state.selectData.USstates);
   const departmentList = useSelector((state) => state.selectData.departments);
 
@@ -83,15 +82,15 @@ export default function NewEmployee() {
 
     if(USstateList.length === 0) {
       fetchData("./USstates.json", setUSstates, setUSstate);
+    } else if(USstate === "") {
+      setUSstate(USstateList[0]);
     }
     if(departmentList.length === 0) {
       fetchData("./departments.json", setDepartments, setDepartment);
+    } else if(department === "") {
+      setDepartment(departmentList[0]);
     }
   }, [USstateList, departmentList, USstate, department, dispatch]);
-
-  useEffect(() => {
-    console.log(employees);
-  }, [employees]);
 
   return (
     <div className="newEmployee">
