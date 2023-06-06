@@ -1,6 +1,10 @@
 import "./Header.css";
 import { Link } from "react-router-dom";
 
+/**
+ * Displays the site header.
+ * @component
+*/
 export default function Header() {
     return (
         <header className="header">

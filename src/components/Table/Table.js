@@ -2,6 +2,14 @@ import "./Table.css";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
+/**
+ * Creates a custom table based on the content provided.
+ * @component
+ * @param {Array} content - The original content of the table – each row is symbolized by an object in the array.
+ * @param {String} color - The main color, passed in hex format. The rest of the theme is calculated from it. If not specified, the main color is a medium warm grey.
+ * @param {String} dateFormat - The format dates must be displayed in, if there are any in the content. The string must be a viable dayjs format (i.e. "MM/DD/YYYY"). If not specified, the dates are rendered in DD/MM/YYYY.
+ * @param {Object} objectKey - The keys for the values that must be displayed if there are any objects within a row object. For example, if a row contains an property "animals", with as value an object { pastFavorite: "unicorn", currentFavorite: "panda" }, you must pass { animals: "pastFavorite" } to display "unicorn", and the value of the past favorite for any other row. If there are no sub-objects in your content, this does not need to be specified.
+*/
 export default function Table({ content, color, dateFormat, objectKey }) {
     const [formattedContent, setFormattedContent] = useState(null);
     const [filteredContent, setFilteredContent] = useState(null);
@@ -16,46 +24,77 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         "--text": "white"
     });
 
-    const filterContent = (query, content) => {
-        const newContent = content.filter(row => {
-            let rowValues = Object.values(row);
-            rowValues = rowValues.map(value => value.toLowerCase().includes(query.toLowerCase()));
-            console.log(rowValues.includes(true));
-            return rowValues.includes(true);
-        });
+    useEffect(() => {
+        /**
+         * Defines all categories that exist in the content, to render all columns.
+         * @function
+         * @param {Array} content - The original content.
+        */
+        const defineCategories = (content) => {
+            const tempCategories = [];
+            const formattedCategories = [];
+            const initSorting = {};
 
-        for(const category in sorting) {
-            if(sorting[category] !== "none") {
-                return sortContent(newContent, category, false);
-            }
-        }
+            content.forEach(object => {
+                for (let property in object) {
+                    if(!tempCategories.includes(property)) {
+                        tempCategories.push(property);
+                    }
+                }
+            });
 
-        return newContent;
-    };
+            tempCategories.forEach(category => {
+                let formattedCategory = category;
+                for (const letter of category) {
+                    if (letter === letter.toUpperCase()) {
+                        formattedCategory = category.replace(letter, ` ${letter.toLowerCase()}`);
+                    }
+                }
+                formattedCategory = formattedCategory.replace(formattedCategory[0], formattedCategory[0].toUpperCase());
+                formattedCategories.push({ "category": category, "formattedCategory": formattedCategory });
+                initSorting[category] = "none";
+            });
 
-    const toggleSortOrder = (category) => {
-        const newSorting = {...sorting};
-        for(let sortingCategory in newSorting) {
-            newSorting[sortingCategory] = "none";
-        }
-        if(sorting[category] === "none" || sorting[category] === "descending") {
-            newSorting[category] = "ascending";
-        } else {
-            newSorting[category] = "descending";
-        }
-        setSorting(newSorting);
-    };
+            setCategories(formattedCategories);
+            setSorting(initSorting);
+        };
 
-    const sortContent = (content, category, toggle) => {
-        return [...content].sort((a, b) => {
-            if(((sorting[category] === "none" || sorting[category] === "descending") && toggle) || (sorting[category] === "ascending" && !toggle)) {
-                return a[category].toLowerCase().localeCompare(b[category].toLowerCase());
-            } else {
-                return b[category].toLowerCase().localeCompare(a[category].toLowerCase());
-            }
-        });
-    };
+        /**
+         * Removes sub-objects from every row of the content according to the object key, if there are any.
+         * @function
+         * @param {Array} content - The original content.
+        */
+        const removeObjects = (content) => {
+            let tempContent = [];
 
+            content.forEach(object => {
+                const newObject = {};
+                for(const property in object) {
+                    if(objectKey.hasOwnProperty(property)) {
+                        const replacementProperty = objectKey[property];
+                        newObject[property] = object[property][replacementProperty];
+                    } else {
+                        newObject[property] = object[property];
+                    }
+                }
+                tempContent.push(newObject);
+            });
+            setFormattedContent(tempContent);
+        };
+
+        defineCategories(content);
+        removeObjects(content);
+    }, [content, objectKey]);
+
+    useEffect(() => {
+        setFilteredContent(formattedContent);
+    }, [formattedContent]);
+
+    /**
+     * Creates a custom color theme based on the hex code passed in props.
+     * @function
+     * @param {String} hex - The hex code of the main color.
+    */
     const customColorTheme = (hex) => {
         let newHex = hex;
         let text;
@@ -87,71 +126,6 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         });
     };
 
-    const renderProperty = (row, category) => {
-        if(row.hasOwnProperty(category.category)) {
-            if(dayjs(row[category.category]).isValid() && row[category.category] === dayjs(row[category.category]).toISOString()) {
-                if(dateFormat) {
-                    return dayjs(row[category.category]).format(dateFormat);
-                } else {
-                    return dayjs(row[category.category]).format("DD/MM/YYYY");
-                }
-            }
-            return row[category.category];
-        }
-    };
-
-    useEffect(() => {
-        const defineCategories = (content) => {
-            const tempCategories = [];
-            const formattedCategories = [];
-            const initSorting = {};
-
-            content.forEach(object => {
-                for (let property in object) {
-                    if(!tempCategories.includes(property)) {
-                        tempCategories.push(property);
-                    }
-                }
-            });
-
-            tempCategories.forEach(category => {
-                let formattedCategory = category;
-                for (const letter of category) {
-                    if (letter === letter.toUpperCase()) {
-                        formattedCategory = category.replace(letter, ` ${letter.toLowerCase()}`);
-                    }
-                }
-                formattedCategory = formattedCategory.replace(formattedCategory[0], formattedCategory[0].toUpperCase());
-                formattedCategories.push({ "category": category, "formattedCategory": formattedCategory });
-                initSorting[category] = "none";
-            });
-
-            setCategories(formattedCategories);
-            setSorting(initSorting);
-        };
-
-        const removeObjects = (content) => {
-            let tempContent = [];
-
-            content.forEach(object => {
-                const newObject = {};
-                for(const property in object) {
-                    if(objectKey.hasOwnProperty(property)) {
-                        const replacementProperty = objectKey[property];
-                        newObject[property] = object[property][replacementProperty];
-                    } else {
-                        newObject[property] = object[property];
-                    }
-                }
-                tempContent.push(newObject);
-            });
-            setFormattedContent(tempContent);
-        };
-
-        defineCategories(content);
-        removeObjects(content);
-    }, [content, objectKey]);
-
     useEffect(() => {
         const hexRegex = /^#[0-9a-zA-Z]{3}(?:[0-9a-zA-Z]{3})?$/;
         if(hexRegex.test(color)) {
@@ -159,11 +133,70 @@ export default function Table({ content, color, dateFormat, objectKey }) {
         }
     }, [color]);
 
-    useEffect(() => {
-        setFilteredContent(formattedContent);
-    }, [formattedContent]);
+    /**
+     * Sorts the content based on a category.
+     * @function
+     * @param {Array} content - The formatted content of the table.
+     * @param {String} category - The category the content is sorted by.
+     * @param {Boolean} toggleOrder - Indicates whether the sorting order of that category needs to be toggled after sorting.
+    */
+    const sortContent = (content, category, toggleOrder) => {
+        return [...content].sort((a, b) => {
+            if(((sorting[category] === "none" || sorting[category] === "descending") && toggleOrder) || (sorting[category] === "ascending" && !toggleOrder)) {
+                return a[category].toLowerCase().localeCompare(b[category].toLowerCase());
+            } else {
+                return b[category].toLowerCase().localeCompare(a[category].toLowerCase());
+            }
+        });
+    };
+
+    /**
+     * Switches the order of sorting between ascending and descending for a specific category.
+     * @function
+     * @param {String} category - The category that needs to be switched.
+    */
+    const toggleSortOrder = (category) => {
+        const newSorting = {...sorting};
+        for(let sortingCategory in newSorting) {
+            newSorting[sortingCategory] = "none";
+        }
+        if(sorting[category] === "none" || sorting[category] === "descending") {
+            newSorting[category] = "ascending";
+        } else {
+            newSorting[category] = "descending";
+        }
+        setSorting(newSorting);
+    };
+
+    /**
+     * Filters the content based on a submitted query.
+     * @function
+     * @param {String} query - The query term, found from the search input.
+     * @param {Array} content - The formatted content of the table.
+    */
+    const filterContent = (query, content) => {
+        const newContent = content.filter(row => {
+            let rowValues = Object.values(row);
+            rowValues = rowValues.map(value => value.toLowerCase().includes(query.toLowerCase()));
+            console.log(rowValues.includes(true));
+            return rowValues.includes(true);
+        });
+
+        for(const category in sorting) {
+            if(sorting[category] !== "none") {
+                return sortContent(newContent, category, false);
+            }
+        }
+
+        return newContent;
+    };
 
     useEffect(() => {
+        /**
+         * Separates the filtered and sorted content into pages, based on the selected number of items to be displayed.
+         * @function
+         * @param {Array} content - The filtered and sorted content.
+        */
         const separatePages = (content) => {
             let originalContent = [...content];
             let slices = [];
@@ -179,6 +212,25 @@ export default function Table({ content, color, dateFormat, objectKey }) {
             separatePages(filteredContent);
         }
     }, [rowsDisplayed, filteredContent]);
+
+    /**
+     * Tests if a row has a value for a category, and if so renders the value accordingly (accounting for dates).
+     * @function
+     * @param {Object} row - A row of the content.
+     * @param {String} category - The category being rendered.
+    */
+    const renderProperty = (row, category) => {
+        if(row.hasOwnProperty(category.category)) {
+            if(dayjs(row[category.category]).isValid() && row[category.category] === dayjs(row[category.category]).toISOString()) {
+                if(dateFormat) {
+                    return dayjs(row[category.category]).format(dateFormat);
+                } else {
+                    return dayjs(row[category.category]).format("DD/MM/YYYY");
+                }
+            }
+            return row[category.category];
+        }
+    };
 
     return (
         <div className="table-container" style={colorTheme}>

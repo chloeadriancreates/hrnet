@@ -4,6 +4,10 @@ import "./EmployeeList.css";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 
+/**
+ * Display the employee list page.
+ * @component
+*/
 export default function EmployeeList() {
     const employees = useSelector((state) => state.employees);
 

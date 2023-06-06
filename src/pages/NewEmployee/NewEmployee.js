@@ -14,6 +14,10 @@ import dayjs from "dayjs";
 import Modal from "@mui/material/Modal";
 import { setDepartments, setUSstates } from "../../app/slices/selectDataSlice";
 
+/**
+ * Display the employee creation page.
+ * @component
+*/
 export default function NewEmployee() {
   const dispatch = useDispatch();
   const today = dayjs();
@@ -40,6 +44,12 @@ export default function NewEmployee() {
     document.title = "HRNet – Add an employee";
   }, []);
 
+  /**
+   * Tests if the submitted form value is correct and edits the corresponding error variable accordingly.
+   * @function
+   * @param {String} content - The value submitted through the form.
+   * @param {Function} content - The useState editing function of the corresponding error variable.
+  */
   const testFormValue = (property, setError) => {
     if(!property) {
       setError(true);
@@ -50,6 +60,11 @@ export default function NewEmployee() {
     }
   };
 
+  /**
+   * Handles the form results and dispatches them to the global state.
+   * @function
+   * @param {Event} event - The event object automatically passed when submitting the form.
+  */
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
@@ -69,6 +84,13 @@ export default function NewEmployee() {
   };
 
   useEffect(() => {
+    /**
+     * Fetches static data from JSON files.
+     * @function
+     * @param {String} URL - The URL of the file.
+     * @param {String} action - The name of the action that needs to be dispatched in order to add the data to the global state.
+     * @param {Function} setFirst - The useState editing function of the first element of that type (either setUSstate or setDepartment).
+    */
     const fetchData = async(URL, action, setFirst) => {
       try {
         const response = await fetch(URL);

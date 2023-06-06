@@ -1,3 +1,6 @@
+/**
+ * Mock employees to display the full capabilities of the Table component.
+*/
 export const mockEmployees = [
     {
         "firstName": "Tony",
