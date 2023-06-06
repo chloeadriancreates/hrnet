@@ -1,3 +1,7 @@
+.table-container {
+    font-family: inherit;
+}
+
 .table {
     width: 100%;
     padding: 20px 0;
@@ -93,7 +97,7 @@
     padding: 10px;
     border-radius: 5px;
     font-size: 16px;
-    font-family: 'Wix Madefor Text', sans-serif;
+    font-family: inherit;
     box-shadow: none;
     border: solid 2px var(--bright);
     transition: all 0.4s ease;
