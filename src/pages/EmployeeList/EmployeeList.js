@@ -1,5 +1,5 @@
 import Header from "../../components/Header/Header";
-import Table from "../../components/Table/Table";
+import { Table } from "@chloeadriancreates/custom-react-table";
 import "./EmployeeList.css";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
