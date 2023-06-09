@@ -21,7 +21,6 @@ import { setDepartments, setUSstates } from "../../app/slices/selectDataSlice";
 export default function NewEmployee() {
   const dispatch = useDispatch();
   const today = dayjs();
-  const dateOptions = { year: "numeric", month: "long", day: "numeric"};
 
   const USstateList = useSelector((state) => state.selectData.USstates);
   const departmentList = useSelector((state) => state.selectData.departments);
@@ -43,6 +42,37 @@ export default function NewEmployee() {
   useEffect(() => {
     document.title = "HRNet – Add an employee";
   }, []);
+
+  useEffect(() => {
+    /**
+     * Fetches static data from JSON files.
+     * @function
+     * @param {String} URL - The URL of the file.
+     * @param {String} action - The name of the action that needs to be dispatched in order to add the data to the global state.
+     * @param {Function} setFirst - The useState editing function of the first element of that type (either setUSstate or setDepartment).
+    */
+    const fetchData = async(URL, action, setFirst) => {
+      try {
+        const response = await fetch(URL);
+        const JSONData = await response.json();
+        dispatch(action(JSONData));
+        setFirst(JSONData[0]);
+      } catch(error) {
+        console.log(error);
+      }
+    };
+
+    if(USstateList.length === 0) {
+      fetchData("./USstates.json", setUSstates, setUSstate);
+    } else if(USstate === "") {
+      setUSstate(USstateList[0]);
+    }
+    if(departmentList.length === 0) {
+      fetchData("./departments.json", setDepartments, setDepartment);
+    } else if(department === "") {
+      setDepartment(departmentList[0]);
+    }
+  }, [USstateList, departmentList, USstate, department, dispatch]);
 
   /**
    * Tests if the submitted form value is correct and edits the corresponding error variable accordingly.
@@ -82,37 +112,6 @@ export default function NewEmployee() {
       setModal(true);
     }
   };
-
-  useEffect(() => {
-    /**
-     * Fetches static data from JSON files.
-     * @function
-     * @param {String} URL - The URL of the file.
-     * @param {String} action - The name of the action that needs to be dispatched in order to add the data to the global state.
-     * @param {Function} setFirst - The useState editing function of the first element of that type (either setUSstate or setDepartment).
-    */
-    const fetchData = async(URL, action, setFirst) => {
-      try {
-        const response = await fetch(URL);
-        const JSONData = await response.json();
-        dispatch(action(JSONData));
-        setFirst(JSONData[0]);
-      } catch(error) {
-        console.log(error);
-      }
-    };
-
-    if(USstateList.length === 0) {
-      fetchData("./USstates.json", setUSstates, setUSstate);
-    } else if(USstate === "") {
-      setUSstate(USstateList[0]);
-    }
-    if(departmentList.length === 0) {
-      fetchData("./departments.json", setDepartments, setDepartment);
-    } else if(department === "") {
-      setDepartment(departmentList[0]);
-    }
-  }, [USstateList, departmentList, USstate, department, dispatch]);
 
   return (
     <div className="newEmployee">
@@ -239,8 +238,8 @@ export default function NewEmployee() {
             <p className="modal-text">{employee.firstName} {employee.lastName} in {employee.department}</p>
             <p className="modal-text">{employee.street}</p>
             <p className="modal-text">{employee.city}, {employee.state.name} – {employee.zipCode}</p>
-            <p className="modal-text">Born on {new Intl.DateTimeFormat("en-US", dateOptions).format(new Date(employee.birthday))}</p>
-            <p className="modal-text">Started on {new Intl.DateTimeFormat("en-US", dateOptions).format(new Date(employee.startDate))}</p>
+            <p className="modal-text">Born on {dayjs(employee.birthday).format("MMMM D YYYY")}</p>
+            <p className="modal-text">Started on {dayjs(employee.startDate).format("MMMM D YYYY")}</p>
             <button className="modal-close" onClick={() => setModal(false)}>
               <i className="fa-solid fa-xmark"></i>
             </button>
