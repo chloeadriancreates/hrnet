@@ -10,7 +10,7 @@ This is project #14 of my OpenClassrooms front-end development course! I had to 
 
 ## Getting started
 - Run `$ npm install` to install all dependencies
-- Run `$ npm start` to see the 
+- Run `$ npm start` to see the project!
 
 ## Thanks for reading, and happy coding!  
 Chloé Adrian
